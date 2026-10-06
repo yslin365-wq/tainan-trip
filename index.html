@@ -49,6 +49,7 @@
     .stop p{margin:5px 0 0;color:var(--muted);font-size:.94rem;line-height:1.58}
     footer{margin-top:34px;padding:20px 8px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.83rem;text-align:center}
     .theme-toggle{position:fixed;z-index:10;top:14px;right:14px;min-height:44px;padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:800 .82rem/1 "Noto Sans TC","Microsoft JhengHei",sans-serif;box-shadow:0 6px 20px rgba(30,24,20,.18);cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .sign-out{position:fixed;z-index:10;top:66px;right:14px;min-height:40px;padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:800 .78rem/1 "Noto Sans TC","Microsoft JhengHei",sans-serif;box-shadow:0 6px 20px rgba(30,24,20,.14);cursor:pointer}
     .theme-toggle:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
     :root[data-theme="dark"] body{background:#202124}
     :root[data-theme="dark"] nav a,:root[data-theme="dark"] .stop{background:#292a2d;color:var(--ink)}
@@ -60,8 +61,9 @@
   </style>
 </head>
 <body>
-  <button class="theme-toggle" type="button" aria-pressed="false">深色模式</button>
-  <main class="page">
+  <button class="theme-toggle" id="themeButton" type="button" aria-pressed="false" hidden>深色模式</button>
+  <button class="sign-out" id="signOutButton" type="button" hidden>登出</button>
+  <main class="page" id="protectedApp" hidden>
     <header class="hero">
       <p class="eyebrow">TAINAN FIELD NOTES</p>
       <p class="issue">COURSE WORK · 01</p>
@@ -102,7 +104,7 @@
     <footer>行程中的店名與時間目前皆為示意，可依交通與訂位狀況彈性調整。</footer>
   </main>
   <script>
-    const themeButton = document.querySelector(".theme-toggle");
+    const themeButton = document.querySelector("#themeButton");
     const updateThemeButton = () => {
       const isDark = document.documentElement.dataset.theme === "dark";
       themeButton.setAttribute("aria-pressed", String(isDark));
@@ -116,6 +118,32 @@
       updateThemeButton();
     });
     updateThemeButton();
+  </script>
+  <script type="module">
+    import { supabase } from "./supabase-client.js";
+
+    const protectedApp = document.querySelector("#protectedApp");
+    const signOutButton = document.querySelector("#signOutButton");
+    const loginUrl = new URL("login.html", window.location.href).href;
+
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      window.location.replace(loginUrl);
+    } else {
+      protectedApp.hidden = false;
+      themeButton.hidden = false;
+      signOutButton.hidden = false;
+    }
+
+    signOutButton.addEventListener("click", async () => {
+      signOutButton.disabled = true;
+      await supabase.auth.signOut({ scope: "local" });
+      window.location.replace(loginUrl);
+    });
+
+    supabase.auth.onAuthStateChange((event, currentSession) => {
+      if (event === "SIGNED_OUT" || !currentSession) window.location.replace(loginUrl);
+    });
   </script>
 </body>
 </html>

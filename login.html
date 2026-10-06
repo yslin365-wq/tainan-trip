@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4e8d8">
+  <title>登入｜課程練習</title>
+  <style>
+    :root{--paper:#fffdf8;--ink:#302923;--muted:#776b61;--red:#a64131;--gold:#d69b42;--line:#e8d6c1}
+    *{box-sizing:border-box}
+    body{display:grid;min-height:100vh;margin:0;padding:24px;place-items:center;background:radial-gradient(circle at 10% 0,rgba(214,155,66,.2),transparent 25rem),linear-gradient(#f3e5d3,#ecdecd);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif}
+    .card{width:min(100%,430px);padding:34px 28px;border-top:7px solid var(--red);border-radius:4px 4px 24px 24px;background:var(--paper);box-shadow:0 16px 44px rgba(76,52,34,.16)}
+    .label{margin:0;color:var(--red);font-size:.75rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+    h1{margin:4px 0 8px;font-family:"Noto Serif TC","PMingLiU",serif;font-size:2.5rem;line-height:1.15}
+    .intro{margin:0 0 24px;color:var(--muted);line-height:1.7}
+    form{display:grid;gap:16px}
+    label{display:grid;gap:7px;font-weight:800}
+    input{width:100%;min-height:48px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--ink);font:inherit}
+    input:focus{outline:3px solid rgba(214,155,66,.38);border-color:var(--gold)}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+    button{min-height:48px;padding:12px;border:1px solid var(--red);border-radius:999px;background:var(--red);color:white;font:800 1rem/1 "Noto Sans TC","Microsoft JhengHei",sans-serif;cursor:pointer}
+    button.secondary{background:transparent;color:var(--red)}
+    button:disabled{cursor:wait;opacity:.65}
+    .message{min-height:1.7em;margin:16px 0 0;color:var(--muted);font-size:.92rem;line-height:1.6}
+    .message.error{color:#9d261c}
+    @media(max-width:420px){body{padding:16px}.card{padding:28px 20px}.actions{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <p class="label">Members Only</p>
+    <h1>課程練習</h1>
+    <p class="intro">登入後才能查看台南兩天一夜的行程內容。</p>
+    <form id="authForm">
+      <label>電子郵件<input id="email" name="email" type="email" autocomplete="email" required></label>
+      <label>密碼<input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required></label>
+      <div class="actions">
+        <button id="signInButton" type="submit">登入</button>
+        <button id="signUpButton" class="secondary" type="button">建立帳號</button>
+      </div>
+    </form>
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+  </main>
+  <script type="module">
+    import { productionUrl, supabase } from "./supabase-client.js";
+
+    const form = document.querySelector("#authForm");
+    const emailInput = document.querySelector("#email");
+    const passwordInput = document.querySelector("#password");
+    const signInButton = document.querySelector("#signInButton");
+    const signUpButton = document.querySelector("#signUpButton");
+    const message = document.querySelector("#message");
+    const protectedUrl = new URL("index.html", window.location.href).href;
+
+    const showMessage = (text, isError = false) => {
+      message.textContent = text;
+      message.classList.toggle("error", isError);
+    };
+
+    const setBusy = (busy) => {
+      signInButton.disabled = busy;
+      signUpButton.disabled = busy;
+    };
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) window.location.replace(protectedUrl);
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setBusy(true);
+      showMessage("正在登入…");
+      const { error } = await supabase.auth.signInWithPassword({
+        email: emailInput.value.trim(),
+        password: passwordInput.value,
+      });
+      if (error) {
+        showMessage("登入失敗，請確認電子郵件與密碼。", true);
+        setBusy(false);
+        return;
+      }
+      window.location.replace(protectedUrl);
+    });
+
+    signUpButton.addEventListener("click", async () => {
+      if (!form.reportValidity()) return;
+      setBusy(true);
+      showMessage("正在建立帳號…");
+      const { data, error } = await supabase.auth.signUp({
+        email: emailInput.value.trim(),
+        password: passwordInput.value,
+        options: { emailRedirectTo: `${productionUrl}index.html` },
+      });
+      if (error) {
+        showMessage(error.message, true);
+        setBusy(false);
+        return;
+      }
+      if (data.session) {
+        window.location.replace(protectedUrl);
+        return;
+      }
+      showMessage("帳號已建立，請到信箱完成驗證後再登入。");
+      setBusy(false);
+    });
+  </script>
+</body>
+</html>
