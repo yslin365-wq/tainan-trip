@@ -233,6 +233,37 @@
     const voteSubmit = document.querySelector("#voteSubmit");
     const voteStatus = document.querySelector("#voteStatus");
     const voteResults = document.querySelector("#voteResults");
+    const voteStorageKey = "tainan-trip-dinner-vote-v1";
+    let deviceVote = null;
+
+    const readDeviceVote = () => {
+      try {
+        const savedVote = JSON.parse(localStorage.getItem(voteStorageKey) || "null");
+        if (savedVote && typeof savedVote.nickname === "string" && dinnerChoices.includes(savedVote.choice)) {
+          return savedVote;
+        }
+      } catch (error) {}
+      return null;
+    };
+
+    const saveDeviceVote = (vote) => {
+      try {
+        localStorage.setItem(voteStorageKey, JSON.stringify(vote));
+      } catch (error) {}
+    };
+
+    const lockVoteForm = (vote) => {
+      voteForm.elements.nickname.value = vote.nickname;
+      voteForm.querySelectorAll('input[name="choice"]').forEach((input) => {
+        input.checked = input.value === vote.choice;
+      });
+      voteForm.querySelectorAll("input").forEach((input) => {
+        input.disabled = true;
+      });
+      voteSubmit.disabled = true;
+      voteSubmit.textContent = "已完成投票";
+      voteStatus.textContent = `你已經投過了：${vote.choice}`;
+    };
 
     const requestVotes = async (path = "", options = {}) => {
       const response = await fetch(`${supabaseUrl}/rest/v1/dinner_votes${path}`, {
@@ -277,6 +308,12 @@
 
     voteForm.addEventListener("submit", async (event) => {
       event.preventDefault();
+      deviceVote = readDeviceVote();
+      if (deviceVote) {
+        lockVoteForm(deviceVote);
+        return;
+      }
+
       const formData = new FormData(voteForm);
       const nickname = String(formData.get("nickname") || "").trim();
       const choice = String(formData.get("choice") || "");
@@ -295,16 +332,19 @@
           headers: { Prefer: "return=minimal" },
           body: JSON.stringify({ nickname, choice }),
         });
-        voteForm.reset();
-        voteStatus.textContent = `已收到 ${nickname} 的投票！`;
+        deviceVote = { nickname, choice };
+        saveDeviceVote(deviceVote);
+        lockVoteForm(deviceVote);
         await loadVoteCounts();
       } catch (error) {
         voteStatus.textContent = "投票失敗，請稍後再試。";
       } finally {
-        voteSubmit.disabled = false;
+        voteSubmit.disabled = deviceVote !== null;
       }
     });
 
+    deviceVote = readDeviceVote();
+    if (deviceVote) lockVoteForm(deviceVote);
     loadVoteCounts();
   </script>
 </body>
