@@ -234,7 +234,9 @@
     const voteStatus = document.querySelector("#voteStatus");
     const voteResults = document.querySelector("#voteResults");
     const voteStorageKey = "tainan-trip-dinner-vote-v1";
+    const nicknameStorageKey = "tainan-trip-dinner-vote-nickname-v1";
     let deviceVote = null;
+    let recoveryInProgress = false;
 
     const readDeviceVote = () => {
       try {
@@ -249,6 +251,7 @@
     const saveDeviceVote = (vote) => {
       try {
         localStorage.setItem(voteStorageKey, JSON.stringify(vote));
+        localStorage.setItem(nicknameStorageKey, vote.nickname);
       } catch (error) {}
     };
 
@@ -266,10 +269,13 @@
     };
 
     const recoverPreviousVote = async () => {
-      if (readDeviceVote()) return;
-      const nickname = voteForm.elements.nickname.value.trim();
+      if (readDeviceVote() || recoveryInProgress) return;
+      let savedNickname = "";
+      try { savedNickname = localStorage.getItem(nicknameStorageKey) || ""; } catch (error) {}
+      const nickname = (voteForm.elements.nickname.value || savedNickname).trim();
       if (!nickname) return;
 
+      recoveryInProgress = true;
       try {
         const votes = await requestVotes(`?nickname=eq.${encodeURIComponent(nickname)}&select=nickname,choice`);
         const previousVote = votes.find((vote) => dinnerChoices.includes(vote.choice));
@@ -277,7 +283,10 @@
         deviceVote = previousVote;
         saveDeviceVote(deviceVote);
         lockVoteForm(deviceVote);
-      } catch (error) {}
+      } catch (error) {
+      } finally {
+        recoveryInProgress = false;
+      }
     };
 
     const requestVotes = async (path = "", options = {}) => {
@@ -360,7 +369,21 @@
 
     deviceVote = readDeviceVote();
     if (deviceVote) lockVoteForm(deviceVote);
-    else window.addEventListener("pageshow", () => window.setTimeout(recoverPreviousVote, 300), { once: true });
+    else {
+      const nicknameInput = voteForm.elements.nickname;
+      const rememberAndRecover = () => {
+        const nickname = nicknameInput.value.trim();
+        if (nickname) {
+          try { localStorage.setItem(nicknameStorageKey, nickname); } catch (error) {}
+          recoverPreviousVote();
+        }
+      };
+      nicknameInput.addEventListener("input", rememberAndRecover);
+      nicknameInput.addEventListener("change", rememberAndRecover);
+      nicknameInput.addEventListener("blur", rememberAndRecover);
+      window.addEventListener("pageshow", recoverPreviousVote, { once: true });
+      [300, 1000, 2500].forEach((delay) => window.setTimeout(recoverPreviousVote, delay));
+    }
     loadVoteCounts();
   </script>
 </body>
