@@ -265,6 +265,21 @@
       voteStatus.textContent = `你已經投過了：${vote.choice}`;
     };
 
+    const recoverPreviousVote = async () => {
+      if (readDeviceVote()) return;
+      const nickname = voteForm.elements.nickname.value.trim();
+      if (!nickname) return;
+
+      try {
+        const votes = await requestVotes(`?nickname=eq.${encodeURIComponent(nickname)}&select=nickname,choice`);
+        const previousVote = votes.find((vote) => dinnerChoices.includes(vote.choice));
+        if (!previousVote) return;
+        deviceVote = previousVote;
+        saveDeviceVote(deviceVote);
+        lockVoteForm(deviceVote);
+      } catch (error) {}
+    };
+
     const requestVotes = async (path = "", options = {}) => {
       const response = await fetch(`${supabaseUrl}/rest/v1/dinner_votes${path}`, {
         ...options,
@@ -345,6 +360,7 @@
 
     deviceVote = readDeviceVote();
     if (deviceVote) lockVoteForm(deviceVote);
+    else window.addEventListener("pageshow", () => window.setTimeout(recoverPreviousVote, 300), { once: true });
     loadVoteCounts();
   </script>
 </body>
