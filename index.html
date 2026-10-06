@@ -38,22 +38,24 @@
     nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 28px}
     nav a{padding:13px 10px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--accent);font-weight:800;text-align:center;text-decoration:none;box-shadow:0 8px 22px var(--shadow);-webkit-tap-highlight-color:transparent}
     .day{margin-top:32px;scroll-margin-top:18px}
+    #day2{margin-top:48px;padding-top:28px;border-top:2px solid var(--accent)}
     .day-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:14px;padding:0 4px}
     .label{margin:0 0 2px;color:var(--accent);font-size:.75rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
     h2{margin:0;font-family:"PMingLiU","MingLiU","Songti TC","Times New Roman",serif;font-size:1.65rem;line-height:1.25}
     .note{margin:0 0 3px;color:var(--muted);font-size:.82rem}
-    .timeline{position:relative;display:grid;gap:13px}
+    .timeline{position:relative;display:grid;width:100%;gap:12px;padding:0 2px}
     .timeline:before{position:absolute;top:35px;bottom:35px;left:29px;width:2px;background:var(--line);content:""}
-    .stop{position:relative;display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 18px 18px 12px;border:1px solid var(--line);border-radius:21px;background:var(--surface);box-shadow:0 8px 24px var(--shadow)}
+    .stop{position:relative;display:grid;width:100%;grid-template-columns:44px 1fr;gap:12px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 3px 10px color-mix(in srgb,var(--text) 8%,transparent)}
     .num{z-index:1;display:grid;width:34px;height:34px;margin-top:2px;place-items:center;border:4px solid var(--surface);border-radius:50%;background:var(--accent);color:var(--background);font-size:.82rem;font-weight:900;box-shadow:0 0 0 1px var(--accent)}
     time{display:block;margin-bottom:2px;color:var(--accent);font-size:.84rem;font-weight:900;letter-spacing:.04em}
     h3{margin:0;font-size:1.12rem;line-height:1.4}
+    .place-icon{display:inline-block;margin-right:.35em;font-size:1em;line-height:1;vertical-align:-.08em}
     .stop p{margin:5px 0 0;color:var(--page-text);font-size:1rem;line-height:1.7}
     footer{margin-top:34px;padding:20px 8px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.83rem;text-align:center}
     .theme-toggle{position:fixed;z-index:10;top:14px;right:14px;min-height:44px;padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--page-text);font:800 .82rem/1 "Microsoft JhengHei","PingFang TC","Heiti TC",Arial,sans-serif;box-shadow:0 6px 20px var(--shadow);cursor:pointer;-webkit-tap-highlight-color:transparent}
     .theme-toggle:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
     .site-qr{display:block;width:min(100%,240px);height:auto;margin:16px auto 0;border-radius:12px}
-    @media(min-width:640px){.page{padding:38px 24px 64px}.hero{padding:34px 36px 28px}.issue{top:35px;right:34px}.stop{grid-template-columns:52px 1fr;padding:22px 24px 22px 16px}.timeline:before{left:34px}.num{width:38px;height:38px}}
+    @media(min-width:640px){.page{padding:38px 24px 64px}.hero{padding:34px 36px 28px}.issue{top:35px;right:34px}.stop{grid-template-columns:52px 1fr;padding:16px}.timeline:before{left:34px}.num{width:38px;height:38px}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
   </style>
 </head>
@@ -76,20 +78,20 @@
     <section class="day" id="day1" aria-labelledby="day1-title">
       <div class="day-head"><div><p class="label">Day 01</p><h2 id="day1-title">第一天</h2></div><p class="note">老城散步日</p></div>
       <div class="timeline">
-        <article class="stop"><span class="num">1</span><div><time datetime="10:30">10:30</time><h3>府城牛肉湯・示意店名</h3><p>抵達台南先用一碗熱湯暖胃，輕鬆開啟兩天的美食行程。</p></div></article>
-        <article class="stop"><span class="num">2</span><div><time datetime="12:30">12:30</time><h3>中西區老街・示意地點</h3><p>鑽進老屋與小巷之間，沿路看看小店，也替彼此拍幾張照片。</p></div></article>
-        <article class="stop"><span class="num">3</span><div><time datetime="15:30">15:30</time><h3>午後甜點店・示意店名</h3><p>找間舒服的老宅咖啡館歇腳，留點時間聊天和補充甜食。</p></div></article>
-        <article class="stop"><span class="num">4</span><div><time datetime="18:30">18:30</time><h3>巷口台南菜・示意店名</h3><p>晚餐一起分食幾道台南家常菜，吃飽後再慢慢散步回住宿處。</p></div></article>
+        <article class="stop"><span class="num">1</span><div><time datetime="10:30">10:30</time><h3><span class="place-icon" aria-hidden="true">🍜</span>府城牛肉湯・示意店名</h3><p>抵達台南先用一碗熱湯暖胃，輕鬆開啟兩天的美食行程。</p></div></article>
+        <article class="stop"><span class="num">2</span><div><time datetime="12:30">12:30</time><h3><span class="place-icon" aria-hidden="true">📍</span>中西區老街・示意地點</h3><p>鑽進老屋與小巷之間，沿路看看小店，也替彼此拍幾張照片。</p></div></article>
+        <article class="stop"><span class="num">3</span><div><time datetime="15:30">15:30</time><h3><span class="place-icon" aria-hidden="true">🍧</span>午後甜點店・示意店名</h3><p>找間舒服的老宅咖啡館歇腳，留點時間聊天和補充甜食。</p></div></article>
+        <article class="stop"><span class="num">4</span><div><time datetime="18:30">18:30</time><h3><span class="place-icon" aria-hidden="true">🍜</span>巷口台南菜・示意店名</h3><p>晚餐一起分食幾道台南家常菜，吃飽後再慢慢散步回住宿處。</p></div></article>
       </div>
     </section>
 
     <section class="day" id="day2" aria-labelledby="day2-title">
       <div class="day-head"><div><p class="label">Day 02</p><h2 id="day2-title">第二天</h2></div><p class="note">海風慢遊日</p></div>
       <div class="timeline">
-        <article class="stop"><span class="num">1</span><div><time datetime="09:00">09:00</time><h3>傳統早餐店・示意店名</h3><p>用蛋餅、鹹粥或小吃填飽肚子，早一點出發避開正午熱氣。</p></div></article>
-        <article class="stop"><span class="num">2</span><div><time datetime="10:30">10:30</time><h3>安平街區・示意地點</h3><p>沿著街區看老建築、逛小店，想吃什麼就一起買來分著吃。</p></div></article>
-        <article class="stop"><span class="num">3</span><div><time datetime="14:00">14:00</time><h3>海邊景點・示意地點</h3><p>到海邊吹風放空，留一段不趕行程的時間感受台南午後。</p></div></article>
-        <article class="stop"><span class="num">4</span><div><time datetime="16:30">16:30</time><h3>伴手禮小店・示意店名</h3><p>回程前買些喜歡的點心，帶著兩天的回憶和戰利品準備返家。</p></div></article>
+        <article class="stop"><span class="num">1</span><div><time datetime="09:00">09:00</time><h3><span class="place-icon" aria-hidden="true">🍜</span>傳統早餐店・示意店名</h3><p>用蛋餅、鹹粥或小吃填飽肚子，早一點出發避開正午熱氣。</p></div></article>
+        <article class="stop"><span class="num">2</span><div><time datetime="10:30">10:30</time><h3><span class="place-icon" aria-hidden="true">📍</span>安平街區・示意地點</h3><p>沿著街區看老建築、逛小店，想吃什麼就一起買來分著吃。</p></div></article>
+        <article class="stop"><span class="num">3</span><div><time datetime="14:00">14:00</time><h3><span class="place-icon" aria-hidden="true">📍</span>海邊景點・示意地點</h3><p>到海邊吹風放空，留一段不趕行程的時間感受台南午後。</p></div></article>
+        <article class="stop"><span class="num">4</span><div><time datetime="16:30">16:30</time><h3><span class="place-icon" aria-hidden="true">🍧</span>伴手禮小店・示意店名</h3><p>回程前買些喜歡的點心，帶著兩天的回憶和戰利品準備返家。</p></div></article>
       </div>
     </section>
     <section class="day" aria-labelledby="reminder-title">
